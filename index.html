@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>🚩 चौपाटी तरुण मंडळ , गोरंबे 🚩</title>
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -106,11 +108,11 @@
   </table>
 
   <script>
-    // Firebase Config
+    // 🔥 Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyAarxGMMLrVdM6r1-7p3Y1s9EMLtFZBCHE",
       authDomain: "fir-40504.firebaseapp.com",
-      databaseURL: "https://fir-40504-default-rtdb.firebaseio.com/", // ✅
+      databaseURL: "https://fir-40504-default-rtdb.firebaseio.com/",
       projectId: "fir-40504",
       storageBucket: "fir-40504.firebasestorage.app",
       messagingSenderId: "133340281936",
@@ -118,13 +120,13 @@
       measurementId: "G-CVCC5XLSCQ"
     };
 
-    // Initialize Firebase
+    // Firebase Initialize
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let totalBalance = 0;
 
-    // Add Record
+    // 👉 नोंद Add करणे
     function addRecord() {
       const date = document.getElementById("date").value;
       const amount = parseFloat(document.getElementById("amount").value);
@@ -145,7 +147,7 @@
       document.getElementById("note").value = "";
     }
 
-    // Show Records Live
+    // 👉 Live डेटा दाखवणे
     const table = document.getElementById("recordsTable");
     db.ref("records").on("child_added", function(snapshot) {
       const data = snapshot.val();
@@ -165,7 +167,7 @@
       document.getElementById("balance").innerText = "शिल्लक: ₹" + totalBalance;
     });
 
-    // CSV डाउनलोड फंक्शन
+    // 👉 CSV डाउनलोड फंक्शन
     function downloadCSV() {
       let csv = [];
       const rows = document.querySelectorAll("table tr");
@@ -179,7 +181,6 @@
         csv.push(row.join(","));
       }
 
-      // Blob बनवणे
       const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
       const downloadLink = document.createElement("a");
       downloadLink.download = "mandal_records.csv";
