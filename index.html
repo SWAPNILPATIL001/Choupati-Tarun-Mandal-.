@@ -2,15 +2,12 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile scaling -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🚩 चौपाटी तरुण मंडळ , गोरंबे 🚩</title>
 
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -94,11 +91,6 @@
     }
     .credit { background-color: #d4f8d4; } 
     .debit { background-color: #f8d4d4; } 
-    #chartContainer {
-      width: 95%;
-      max-width: 600px;
-      margin: 30px auto;
-    }
   </style>
 </head>
 <body>
@@ -129,6 +121,8 @@
     </table>
   </div>
 
+  <!-- Download CSV Button -->
+  <button onclick="downloadCSV()">📥 CSV डाउनलोड करा</button>
 
   <script>
     // ✅ Firebase Config (v8 style only)
@@ -147,12 +141,6 @@
     const db = firebase.database();
 
     let totalBalance = 0;
-    let totalCredit = 0;
-    let totalDebit = 0;
-
-        }]
-      }
-    });
 
     // Add Record
     function addRecord() {
@@ -191,16 +179,30 @@
 
       if(data.type === "credit"){
         totalBalance += parseFloat(data.amount);
-        totalCredit += parseFloat(data.amount);
       } else {
         totalBalance -= parseFloat(data.amount);
-        totalDebit += parseFloat(data.amount);
       }
       document.getElementById("balance").innerText = "शिल्लक: ₹" + totalBalance;
-
-      financeChart.data.datasets[0].data = [totalCredit, totalDebit];
-      financeChart.update();
     });
+
+    // ✅ Download CSV Function
+    function downloadCSV() {
+      let csv = "तारीख,रक्कम (₹),प्रकार,नोंद\n";
+      const rows = table.querySelectorAll("tr");
+
+      for (let i = 1; i < rows.length; i++) {
+        const cols = rows[i].querySelectorAll("td");
+        const rowData = [];
+        cols.forEach(td => rowData.push(td.innerText.replace("₹","")));
+        csv += rowData.join(",") + "\n";
+      }
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "records.csv";
+      link.click();
+    }
   </script>
 </body>
 </html>
