@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>🚩 चौपाटी तरुण मंडळ , गोरंबे 🚩</title>
+  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -51,8 +52,8 @@
     th {
       background: #f0f0f0;
     }
-    .credit { background-color: #d4f8d4; } /* हिरवा */
-    .debit { background-color: #f8d4d4; } /* लाल */
+    .credit { background-color: #d4f8d4; } 
+    .debit { background-color: #f8d4d4; } 
     button {
       background: linear-gradient(45deg, #ff9933, #ff3300);
       border: none;
@@ -119,12 +120,12 @@
     const firebaseConfig = {
       apiKey: "AIzaSyAarxGMMLrVdM6r1-7p3Y1s9EMLtFZBCHE",
       authDomain: "fir-40504.firebaseapp.com",
-      databaseURL: "https://fir-40504-default-rtdb.firebaseio.com/", // ✅ महत्वाचे
       projectId: "fir-40504",
-      storageBucket: "fir-40504.firebasestorage.app",
+      storageBucket: "fir-40504.appspot.com",
       messagingSenderId: "133340281936",
       appId: "1:133340281936:web:076e92582342ff3b22e555",
-      measurementId: "G-CVCC5XLSCQ"
+      measurementId: "G-CVCC5XLSCQ",
+      databaseURL: "https://fir-40504-default-rtdb.firebaseio.com/"  // ✅ महत्वाचे
     };
 
     // Initialize Firebase
@@ -163,8 +164,7 @@
           type: type
         });
       } else {
-        alert("सर्व माहिती भरा !");
-        return;
+        alert("सर्व माहिती भरा!");
       }
 
       document.getElementById("date").value = "";
