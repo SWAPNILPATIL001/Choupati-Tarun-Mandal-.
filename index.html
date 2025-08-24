@@ -2,82 +2,101 @@
 <html lang="mr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- mobile scaling -->
   <title>🚩 चौपाटी तरुण मंडळ , गोरंबे 🚩</title>
+
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: 'Poppins', sans-serif;
       background: #fff8dc;
-      text-align: center;
       margin: 0;
       padding: 0;
+      text-align: center;
     }
     header {
       background: linear-gradient(90deg, #ff9933, #ff3300);
       color: white;
       padding: 20px;
-      font-size: 28px;
+      font-size: 22px;
       font-weight: 700;
       position: relative;
     }
     #balance {
-      position: absolute;
-      right: 20px;
-      top: 20px;
       background: #222;
       color: #fff;
       padding: 8px 15px;
       border-radius: 8px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
+      position: absolute;
+      right: 10px;
+      top: 15px;
     }
     h2 {
       margin-top: 20px;
       font-weight: 600;
     }
-    table {
+    input, select {
       width: 90%;
-      margin: 20px auto;
+      max-width: 400px;
+      padding: 10px;
+      margin: 8px auto;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+    button {
+      width: 90%;
+      max-width: 400px;
+      background: linear-gradient(45deg, #ff9933, #ff3300);
+      border: none;
+      color: white;
+      padding: 12px;
+      margin: 10px auto;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: 0.3s;
+      display: block;
+    }
+    button:hover {
+      opacity: 0.85;
+    }
+    .table-container {
+      overflow-x: auto;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
       border-collapse: collapse;
-      font-size: 18px;
+      font-size: 16px;
+      min-width: 500px;
     }
     th, td {
       border: 2px solid #333;
       padding: 10px;
+      text-align: center;
     }
     th {
       background: #f0f0f0;
     }
     .credit { background-color: #d4f8d4; } 
     .debit { background-color: #f8d4d4; } 
-    button {
-      background: linear-gradient(45deg, #ff9933, #ff3300);
-      border: none;
-      color: white;
-      padding: 10px 18px;
-      margin: 10px;
-      cursor: pointer;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    button:hover {
-      opacity: 0.8;
-    }
-    input, select {
-      padding: 8px;
-      margin: 6px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
     #chartContainer {
-      width: 80%;
+      width: 95%;
+      max-width: 600px;
       margin: 30px auto;
     }
   </style>
@@ -89,60 +108,41 @@
   </header>
 
   <h2>नोंद जोडा</h2>
-  <input type="date" id="date"><br>
-  <input type="number" id="amount" placeholder="रक्कम (₹)"><br>
-  <input type="text" id="note" placeholder="नोंद"><br>
-  
+  <input type="date" id="date">
+  <input type="number" id="amount" placeholder="रक्कम (₹)">
+  <input type="text" id="note" placeholder="नोंद">
   <select id="type">
-    <option value="credit">Credit (जमा )</option>
+    <option value="credit">Credit (जमा)</option>
     <option value="debit">Debit (खर्च)</option>
-  </select><br>
-
+  </select>
   <button onclick="addRecord()">नोंद जोडा</button>
 
   <h2>सर्वांचा इतिहास</h2>
-  <table id="recordsTable">
-    <tr>
-      <th>तारीख</th>
-      <th>रक्कम (₹)</th>
-      <th>प्रकार</th>
-      <th>नोंद</th>
-    </tr>
-  </table>
-
-  <h2>📊 जमा vs खर्च</h2>
-  <div id="chartContainer">
-    <canvas id="financeChart"></canvas>
+  <div class="table-container">
+    <table id="recordsTable">
+      <tr>
+        <th>तारीख</th>
+        <th>रक्कम (₹)</th>
+        <th>प्रकार</th>
+        <th>नोंद</th>
+      </tr>
+    </table>
   </div>
 
+
   <script>
-    // Firebase Config
+    // ✅ Firebase Config (v8 style only)
     const firebaseConfig = {
-      // Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyD1uAv_Nh3RspOmBHbfzwUcvQfdE5Hzoqo",
-  authDomain: "choupati-tarun-mandal.firebaseapp.com",
-  databaseURL: "https://choupati-tarun-mandal-default-rtdb.firebaseio.com",
-  projectId: "choupati-tarun-mandal",
-  storageBucket: "choupati-tarun-mandal.firebasestorage.app",
-  messagingSenderId: "576531949280",
-  appId: "1:576531949280:web:447105081c8dc666435285",
-  measurementId: "G-2WCJQVJNER"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+      apiKey: "AIzaSyD1uAv_Nh3RspOmBHbfzwUcvQfdE5Hzoqo",
+      authDomain: "choupati-tarun-mandal.firebaseapp.com",
+      databaseURL: "https://choupati-tarun-mandal-default-rtdb.firebaseio.com",
+      projectId: "choupati-tarun-mandal",
+      storageBucket: "choupati-tarun-mandal.firebasestorage.app",
+      messagingSenderId: "576531949280",
+      appId: "1:576531949280:web:447105081c8dc666435285",
+      measurementId: "G-2WCJQVJNER"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -150,15 +150,6 @@ const analytics = getAnalytics(app);
     let totalCredit = 0;
     let totalDebit = 0;
 
-    // Chart.js Setup
-    const ctx = document.getElementById("financeChart").getContext("2d");
-    const financeChart = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["जमा (Credit)", "खर्च (Debit)"],
-        datasets: [{
-          data: [0, 0],
-          backgroundColor: ["#4CAF50", "#F44336"]
         }]
       }
     });
